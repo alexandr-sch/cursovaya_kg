@@ -172,6 +172,20 @@
   <ItemGroup>
     <Text Include="shaders\f_frac.txt" />
   </ItemGroup>
+  <ItemGroup>
+    <Object Include="models\bed.obj" />
+    <Object Include="models\carpet.obj" />
+    <Object Include="models\chair.obj" />
+    <Object Include="models\desk.obj" />
+    <Object Include="models\fan.obj" />
+    <Object Include="models\keyboard.obj" />
+    <Object Include="models\lamp.obj" />
+    <Object Include="models\mouse.obj" />
+    <Object Include="models\painting.obj" />
+    <Object Include="models\pcblock.obj" />
+    <Object Include="models\plant.obj" />
+    <Object Include="models\shkaf.obj" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

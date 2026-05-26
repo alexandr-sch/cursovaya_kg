@@ -16,9 +16,6 @@
     <Filter Include="shaders">
       <UniqueIdentifier>{84f899e7-6de1-4274-9f19-fe7cddf57fbe}</UniqueIdentifier>
     </Filter>
-    <Filter Include="models">
-      <UniqueIdentifier>{f148fba1-aaf2-4cfe-ab67-621d92005951}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -117,43 +114,5 @@
     <Text Include="shaders\f_frac.txt">
       <Filter>shaders</Filter>
     </Text>
-  </ItemGroup>
-  <ItemGroup>
-    <Object Include="models\bed.obj">
-      <Filter>models</Filter>
-    </Object>
-    <Object Include="models\carpet.obj">
-      <Filter>models</Filter>
-    </Object>
-    <Object Include="models\chair.obj">
-      <Filter>models</Filter>
-    </Object>
-    <Object Include="models\desk.obj">
-      <Filter>models</Filter>
-    </Object>
-    <Object Include="models\fan.obj">
-      <Filter>models</Filter>
-    </Object>
-    <Object Include="models\keyboard.obj">
-      <Filter>models</Filter>
-    </Object>
-    <Object Include="models\lamp.obj">
-      <Filter>models</Filter>
-    </Object>
-    <Object Include="models\mouse.obj">
-      <Filter>models</Filter>
-    </Object>
-    <Object Include="models\painting.obj">
-      <Filter>models</Filter>
-    </Object>
-    <Object Include="models\pcblock.obj">
-      <Filter>models</Filter>
-    </Object>
-    <Object Include="models\plant.obj">
-      <Filter>models</Filter>
-    </Object>
-    <Object Include="models\shkaf.obj">
-      <Filter>models</Filter>
-    </Object>
   </ItemGroup>
 </Project>

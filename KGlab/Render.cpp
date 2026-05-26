@@ -26,6 +26,66 @@ bool texturing = true;
 bool lightning = true;
 bool alpha = false;
 
+void SetWoodMaterial()
+{
+    float amb[] = { 0.45f, 0.32f, 0.20f, 1.0f };
+    float dif[] = { 0.75f, 0.55f, 0.35f, 1.0f };
+    float spec[] = { 0.10f, 0.10f, 0.10f, 1.0f };
+
+    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, amb);
+    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, dif);
+    glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, spec);
+    glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, 18.0f);
+}
+
+void SetMetalMaterial()
+{
+    float amb[] = { 0.20f, 0.20f, 0.22f, 1.0f };
+    float dif[] = { 0.55f, 0.55f, 0.58f, 1.0f };
+    float spec[] = { 0.90f, 0.90f, 0.90f, 1.0f };
+
+    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, amb);
+    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, dif);
+    glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, spec);
+    glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, 80.0f);
+}
+
+void SetFabricMaterial()
+{
+    float amb[] = { 0.45f, 0.45f, 0.45f, 1.0f };
+    float dif[] = { 0.85f, 0.85f, 0.85f, 1.0f };
+    float spec[] = { 0.02f, 0.02f, 0.02f, 1.0f };
+
+    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, amb);
+    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, dif);
+    glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, spec);
+    glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, 3.0f);
+}
+
+void SetPlasticMaterial()
+{
+    float amb[] = { 0.25f, 0.25f, 0.25f, 1.0f };
+    float dif[] = { 0.45f, 0.45f, 0.48f, 1.0f };
+    float spec[] = { 0.35f, 0.35f, 0.35f, 1.0f };
+
+    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, amb);
+    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, dif);
+    glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, spec);
+    glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, 50.0f);
+}
+
+void SetWallMaterial()
+{
+    float amb[] = { 0.45f, 0.45f, 0.45f, 1.0f };
+    float dif[] = { 0.85f, 0.85f, 0.85f, 1.0f };
+    float spec[] = { 0.02f, 0.02f, 0.02f, 1.0f };
+
+    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, amb);
+    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, dif);
+    glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, spec);
+    glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, 2.0f);
+}
+
 // Переключение режимов освещения, текстурирования, альфа-наложения
 void switchModes(OpenGL* sender, KeyEventArg arg)
 {
@@ -72,14 +132,14 @@ GuiTextRectangle text;
 // ID для текстуры
 GLuint texId;
 
-ObjModel lamp_model, fan_model, bed_model, desk_model, pcblock_model, mouse_model, keyboard_model, chair_model, plant_model, carpet_model;
+ObjModel lamp_model, fan_model, bed_model, desk_model, pcblock_model, mouse_model, keyboard_model, chair_model, plant_model, carpet_model, shkaf_model;
 
 Shader cassini_sh;
 Shader phong_sh;
 Shader vb_sh;
 Shader simple_texture_sh;
 
-Texture plintus, wood_floor, stena, potolok, lamp, door, bed, desk, desktop, pcblock, kovrik, mouse, keyboard, chair, plant, carpet;
+Texture plintus, wood_floor, stena, potolok, lamp, door, bed, desk, desktop, pcblock, kovrik, mouse, keyboard, chair, plant, carpet, carpet2, shkaf, painting;
 // Выполняется один раз перед первым рендером
 void initRender()
 {
@@ -120,6 +180,9 @@ void initRender()
     chair.LoadTexture("textures/chair.jpg");
     plant.LoadTexture("textures/plant.jpg");
     carpet.LoadTexture("textures/carpet.jpg");
+    carpet2.LoadTexture("textures/carpet2.jpg");
+    shkaf.LoadTexture("textures/shkaf.jpg");
+    painting.LoadTexture("textures/painting.jpg");
 
     lamp_model.LoadModel("models//lamp.obj");
     fan_model.LoadModel("models/fan.obj");
@@ -131,6 +194,7 @@ void initRender()
     chair_model.LoadModel("models/chair.obj");
     plant_model.LoadModel("models/plant.obj");
     carpet_model.LoadModel("models/carpet.obj");
+    shkaf_model.LoadModel("models/shkaf.obj");
     //==============НАСТРОЙКА ТЕКСТУР================
     // 4 байта на хранение пикселя
     glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
@@ -156,6 +220,9 @@ void initRender()
     //========================================================
 
     camera.setPosition(2, 1.5, 1.5);
+
+    glLightModeli(GL_LIGHT_MODEL_LOCAL_VIEWER, GL_TRUE);
+
 }
 
 float view_matrix[16];
@@ -193,8 +260,32 @@ void Render(double delta_time)
 
     light.SetUpLight();
 
+    if (computerOn)
+    {
+        GLfloat monitorPos[] = { -4.1f, -5.15f, -2.7f, 1.0f };
+
+        GLfloat ambient[] = { 0.02f, 0.03f, 0.05f, 1.0f };
+        GLfloat diffuse[] = { 0.18f, 0.28f, 0.45f, 1.0f };
+        GLfloat specular[] = { 0.10f, 0.18f, 0.30f, 1.0f };
+
+        glLightfv(GL_LIGHT1, GL_POSITION, monitorPos);
+        glLightfv(GL_LIGHT1, GL_AMBIENT, ambient);
+        glLightfv(GL_LIGHT1, GL_DIFFUSE, diffuse);
+        glLightfv(GL_LIGHT1, GL_SPECULAR, specular);
+
+        glLightf(GL_LIGHT1, GL_CONSTANT_ATTENUATION, 1.0f);
+        glLightf(GL_LIGHT1, GL_LINEAR_ATTENUATION, 0.8f);
+        glLightf(GL_LIGHT1, GL_QUADRATIC_ATTENUATION, 0.3f);
+
+        glEnable(GL_LIGHT1);
+    }
+    else
+    {
+        glDisable(GL_LIGHT1);
+    }
+
     // Рисуем оси
-    gl.DrawAxes();
+    //gl.DrawAxes();
 
     glBindTexture(GL_TEXTURE_2D, 0);
 
@@ -221,17 +312,6 @@ void Render(double delta_time)
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     }
 
-    //=============НАСТРОЙКА МАТЕРИАЛА==============
-
-    float roomAmb[] = { 0.8f, 0.8f, 0.8f, 1.0f };
-    float roomDif[] = { 1.0f, 1.0f, 1.0f, 1.0f };
-    float roomSpec[] = { 0.1f, 0.1f, 0.1f, 1.0f };
-
-    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, roomAmb);
-    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, roomDif);
-    glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, roomSpec);
-    glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, 8.0f);
-
     glColor4f(1, 1, 1, 1);
 
     // размеры комнаты
@@ -248,6 +328,8 @@ void Render(double delta_time)
     glEnable(GL_TEXTURE_2D);
 
     // пол
+    SetWoodMaterial();
+
     wood_floor.Bind();
 
     glColor4d(1, 1, 1, 1);
@@ -270,6 +352,7 @@ void Render(double delta_time)
     glEnd();
 
     // потолок
+    SetWallMaterial();
     potolok.Bind();
 
     glBegin(GL_QUADS);
@@ -290,6 +373,7 @@ void Render(double delta_time)
     glEnd();
 
     // левая стена
+    SetWallMaterial();
     stena.Bind();
 
     glBegin(GL_QUADS);
@@ -310,6 +394,11 @@ void Render(double delta_time)
     glEnd();
 
     // правая стена
+    SetWallMaterial();
+    stena.Bind();
+
+    glColor4d(1, 1, 1, 1);
+
     glBegin(GL_QUADS);
     glNormal3d(-1, 0, 0);
 
@@ -328,6 +417,10 @@ void Render(double delta_time)
     glEnd();
 
     // задняя стена
+    SetWallMaterial();
+    stena.Bind();
+
+    glColor4d(1, 1, 1, 1);
     glBegin(GL_QUADS);
     glNormal3d(0, 1, 0);
 
@@ -346,6 +439,7 @@ void Render(double delta_time)
     glEnd();
 
     // передняя стена
+    SetWallMaterial();
     stena.Bind();
 
     glColor4d(1, 1, 1, 1);
@@ -371,6 +465,7 @@ void Render(double delta_time)
     
     // стол
     glEnable(GL_TEXTURE_2D);
+    SetWoodMaterial();
     desk.Bind();
 
     glColor3f(1, 1, 1);
@@ -525,6 +620,25 @@ void Render(double delta_time)
 
     glPopMatrix();
 
+    // шкаф
+
+    glPushMatrix();
+
+    glTranslated(3.9, 5.1, -4.95);
+    glScaled(0.04, 0.04, 0.04);
+    glRotated(-90, 0, 0, 1);
+
+    glEnable(GL_TEXTURE_2D);
+    glEnable(GL_LIGHTING);
+
+    glColor3f(1, 1, 1);
+
+    SetWoodMaterial();
+    shkaf.Bind();
+    shkaf_model.Draw();
+
+    glPopMatrix();
+
     // ковер
     glPushMatrix();
 
@@ -536,8 +650,126 @@ void Render(double delta_time)
     glEnable(GL_LIGHTING);
     glColor3f(1, 1, 1);
 
+    SetFabricMaterial();
     carpet.Bind();
     carpet_model.Draw();
+
+    glPopMatrix();
+
+    // ковер на стене
+    glPushMatrix();
+
+    glEnable(GL_TEXTURE_2D);
+    glEnable(GL_LIGHTING);
+
+    SetFabricMaterial();
+    carpet2.Bind();
+    glColor3f(1, 1, 1);
+
+    double carpetWidth = 6.5;
+    double carpetHeight = 4.5;
+
+    double wallOffset = 0.01;
+
+    double wallX = right - wallOffset;
+
+    double carpetCenterY = -1.5;
+    double carpetBottomZ = -2.0;
+
+    double carpetY1 = carpetCenterY - carpetWidth / 2.0;
+    double carpetY2 = carpetCenterY + carpetWidth / 2.0;
+
+    double carpetZ1 = carpetBottomZ;
+    double carpetZ2 = carpetBottomZ + carpetHeight;
+
+    glBegin(GL_QUADS);
+
+    glNormal3d(-1, 0, 0);
+    glTexCoord2d(0, 0);
+    glVertex3d(wallX, carpetY1, carpetZ1);
+    glTexCoord2d(1, 0);
+    glVertex3d(wallX, carpetY2, carpetZ1);
+    glTexCoord2d(1, 1);
+    glVertex3d(wallX, carpetY2, carpetZ2);
+    glTexCoord2d(0, 1);
+    glVertex3d(wallX, carpetY1, carpetZ2);
+
+    glEnd();
+
+    glPopMatrix();
+
+    // картина 
+    glPushMatrix();
+
+    glEnable(GL_TEXTURE_2D);
+    glEnable(GL_LIGHTING);
+
+    double pictureCenterX = 0.0;
+    double pictureY = back + 0.02;
+    double pictureBottomZ = -0.3;
+
+    double pictureWidth = 2.8;
+    double pictureHeight = 1.8;
+
+    double frameThickness = 0.08;
+
+    double px1 = pictureCenterX - pictureWidth / 2.0;
+    double px2 = pictureCenterX + pictureWidth / 2.0;
+
+    double pz1 = pictureBottomZ;
+    double pz2 = pictureBottomZ + pictureHeight;
+
+    glDisable(GL_TEXTURE_2D);
+
+    SetWoodMaterial();
+    glColor3f(0.42f, 0.27f, 0.13f);
+
+    glBegin(GL_QUADS);
+
+    glVertex3d(px1 - frameThickness, pictureY, pz2);
+    glVertex3d(px2 + frameThickness, pictureY, pz2);
+    glVertex3d(px2 + frameThickness, pictureY, pz2 + frameThickness);
+    glVertex3d(px1 - frameThickness, pictureY, pz2 + frameThickness);
+
+    glVertex3d(px1 - frameThickness, pictureY, pz1 - frameThickness);
+    glVertex3d(px2 + frameThickness, pictureY, pz1 - frameThickness);
+    glVertex3d(px2 + frameThickness, pictureY, pz1);
+    glVertex3d(px1 - frameThickness, pictureY, pz1);
+
+    glVertex3d(px1 - frameThickness, pictureY, pz1);
+    glVertex3d(px1, pictureY, pz1);
+    glVertex3d(px1, pictureY, pz2);
+    glVertex3d(px1 - frameThickness, pictureY, pz2);
+
+    glVertex3d(px2, pictureY, pz1);
+    glVertex3d(px2 + frameThickness, pictureY, pz1);
+    glVertex3d(px2 + frameThickness, pictureY, pz2);
+    glVertex3d(px2, pictureY, pz2);
+
+    glEnd();
+
+    glEnable(GL_TEXTURE_2D);
+
+    painting.Bind();
+    glColor3f(1, 1, 1);
+
+    glBegin(GL_QUADS);
+
+    glNormal3d(0, 1, 0);
+
+    glTexCoord2d(0, 0);
+    glVertex3d(px1, pictureY + 0.001, pz1);
+
+    glTexCoord2d(1, 0);
+    glVertex3d(px2, pictureY + 0.001, pz1);
+
+    glTexCoord2d(1, 1);
+    glVertex3d(px2, pictureY + 0.001, pz2);
+
+    glTexCoord2d(0, 1);
+    glVertex3d(px1, pictureY + 0.001, pz2);
+
+    glEnd();
 
     glPopMatrix();
 
@@ -552,6 +784,7 @@ void Render(double delta_time)
     glEnable(GL_LIGHTING);
     glColor3f(1, 1, 1);
 
+    SetFabricMaterial();
     chair.Bind();
     chair_model.Draw();
 
@@ -576,6 +809,7 @@ void Render(double delta_time)
     // монитор
     glPushMatrix();
 
+    SetPlasticMaterial();
     glDisable(GL_LIGHTING);
 
     glBindTexture(GL_TEXTURE_2D, 0);
@@ -617,31 +851,37 @@ void Render(double delta_time)
 
     glBegin(GL_QUADS);
 
+    glNormal3d(0, -1, 0);
     glVertex3d(-w, 0, -h);
     glVertex3d(w, 0, -h);
     glVertex3d(w, 0, h);
     glVertex3d(-w, 0, h);
 
+    glNormal3d(0, 1, 0);
     glVertex3d(-w, t, -h);
     glVertex3d(w, t, -h);
     glVertex3d(w, t, h);
     glVertex3d(-w, t, h);
 
+    glNormal3d(0, 0, 1);
     glVertex3d(-w, 0, h);
     glVertex3d(w, 0, h);
     glVertex3d(w, t, h);
     glVertex3d(-w, t, h);
 
+    glNormal3d(0, 0, -1);
     glVertex3d(-w, 0, -h);
     glVertex3d(w, 0, -h);
     glVertex3d(w, t, -h);
     glVertex3d(-w, t, -h);
 
+    glNormal3d(-1, 0, 0);
     glVertex3d(-w, 0, -h);
     glVertex3d(-w, t, -h);
     glVertex3d(-w, t, h);
     glVertex3d(-w, 0, h);
 
+    glNormal3d(1, 0, 0);
     glVertex3d(w, 0, -h);
     glVertex3d(w, t, -h);
     glVertex3d(w, t, h);
@@ -693,6 +933,7 @@ void Render(double delta_time)
     glEnable(GL_TEXTURE_2D);
     glColor3f(1, 1, 1);
 
+    SetPlasticMaterial();
     pcblock.Bind();
     pcblock_model.Draw();
 
@@ -833,6 +1074,7 @@ void Render(double delta_time)
 
     glColor3f(1, 1, 1);
 
+    SetPlasticMaterial();
     mouse.Bind();
     mouse_model.Draw();
 
@@ -850,6 +1092,7 @@ void Render(double delta_time)
     glEnable(GL_LIGHTING);
 
     glEnable(GL_TEXTURE_2D);
+    SetPlasticMaterial();
     keyboard.Bind();
     glColor3f(1, 1, 1);
     keyboard_model.Draw();
@@ -865,6 +1108,7 @@ void Render(double delta_time)
     glRotated(0, 1, 0, 0);
     glRotated(180, 0, 0, 1);
 
+    SetFabricMaterial();
     bed.Bind();
     bed_model.Draw();
 
@@ -881,11 +1125,13 @@ void Render(double delta_time)
     Shader::DontUseShaders();
 
     glPushMatrix();
+    SetMetalMaterial();
     glTranslated(fx, fy, fz);
 
     // основание
     glColor3f(0.2f, 0.2f, 0.2f);
     glBegin(GL_TRIANGLE_FAN);
+    glNormal3d(0, 0, -1);
     glVertex3d(0, 0, 0);
     for (int i = 0; i <= 360; i += 10) {
         double a = i * 3.14159 / 180;
@@ -894,6 +1140,7 @@ void Render(double delta_time)
     glEnd();
 
     glBegin(GL_TRIANGLE_FAN);
+    glNormal3d(0, 0, 1);
     glVertex3d(0, 0, 0.08);
     for (int i = 0; i <= 360; i += 10) {
         double a = i * 3.14159 / 180;
@@ -906,6 +1153,7 @@ void Render(double delta_time)
         double a = i * 3.14159 / 180;
         double x = cos(a) * 0.5;
         double y = sin(a) * 0.5;
+        glNormal3d(cos(a), sin(a), 0);
         glVertex3d(x, y, 0);
         glVertex3d(x, y, 0.08);
     }
@@ -915,21 +1163,25 @@ void Render(double delta_time)
     glColor3f(0.35f, 0.35f, 0.35f);
     glBegin(GL_QUADS);
     // передняя сторона
+    glNormal3d(0, -1, 0);
     glVertex3d(-0.07, -0.07, 0.08);
     glVertex3d(0.07, -0.07, 0.08);
     glVertex3d(0.07, 0.07, 1.8);
     glVertex3d(-0.07, 0.07, 1.8);
     // задняя сторона
+    glNormal3d(0, 1, 0);
     glVertex3d(-0.07, -0.07, 0.08);
     glVertex3d(-0.07, 0.07, 1.8);
     glVertex3d(0.07, 0.07, 1.8);
     glVertex3d(0.07, -0.07, 0.08);
     // левая сторона
+    glNormal3d(-1, 0, 0);
     glVertex3d(-0.07, -0.07, 0.08);
     glVertex3d(-0.07, -0.07, 1.8);
     glVertex3d(-0.07, 0.07, 1.8);
     glVertex3d(-0.07, 0.07, 0.08);
     // правая сторона
+    glNormal3d(1, 0, 0);
     glVertex3d(0.07, -0.07, 0.08);
     glVertex3d(0.07, 0.07, 0.08);
     glVertex3d(0.07, 0.07, 1.8);
@@ -942,6 +1194,7 @@ void Render(double delta_time)
 
     glColor3f(0.4f, 0.4f, 0.4f);
     glBegin(GL_QUADS);
+    glNormal3d(0, -1, 0);
     glVertex3d(-0.22, -0.22, -0.12);
     glVertex3d(0.22, -0.22, -0.12);
     glVertex3d(0.22, 0.22, 0.12);

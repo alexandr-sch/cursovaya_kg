@@ -137,22 +137,29 @@ void Light::MoveLight(OpenGL* sender, MouseEventArg arg)
 
 void Light::SetUpLight()
 {
-    // Характеристики излучаемого света
+    GLfloat lamb[] = { 0.35f, 0.35f, 0.35f, 1.0f };
 
-    // Фоновое освещение (рассеянный свет)
-    GLfloat lamb[] = {0.2, 0.2, 0.2, 0};
-    // Диффузная составляющая света
-    GLfloat ldif[] = {0.7, 0.7, 0.7, 0};
-    // Зеркально отражаемая составляющая света
-    GLfloat lspec[] = {1.0, 1.0, 1.0, 0};
-    // Координаты
-    GLfloat lposition[] = {posX, posY, posZ, 1.};
+    GLfloat ldif[] = { 1.05f, 1.05f, 1.00f, 1.0f };
 
-    // Сообщаем эти значения OpenGL
+    GLfloat lspec[] = { 0.45f, 0.45f, 0.45f, 1.0f };
+
+    GLfloat lposition[] =
+    {
+        (GLfloat)posX,
+        (GLfloat)posY,
+        (GLfloat)posZ,
+        1.0f
+    };
+
     glLightfv(GL_LIGHT0, GL_POSITION, lposition);
     glLightfv(GL_LIGHT0, GL_AMBIENT, lamb);
     glLightfv(GL_LIGHT0, GL_DIFFUSE, ldif);
     glLightfv(GL_LIGHT0, GL_SPECULAR, lspec);
+
+    glLightf(GL_LIGHT0, GL_CONSTANT_ATTENUATION, 0.9f);
+    glLightf(GL_LIGHT0, GL_LINEAR_ATTENUATION, 0.015f);
+    glLightf(GL_LIGHT0, GL_QUADRATIC_ATTENUATION, 0.002f);
+
     glEnable(GL_LIGHT0);
 }
 
